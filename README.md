@@ -29,7 +29,7 @@ Open `data/snapshot.html` in a browser. No installation or key is needed. The te
    .\setup.ps1
    ```
 
-   Setup uses Ubuntu in WSL, installs Python dependencies and Ollama, downloads the embedding, answer and reranker models, then downloads and indexes the 28 source reports. The first run needs internet access and several GB of disk space. If Windows requests administrator approval or a restart for WSL, complete that and Ubuntu's first-run account setup, then rerun the command. Ubuntu may ask for its password to install packages.
+   Setup uses the selected Ubuntu distribution in WSL, installs the Python runtime and Tesseract, installs Ollama inside that same distribution, downloads the embedding, answer and reranker models, then downloads and indexes the 28 source reports. The first run needs internet access and several GB of disk space. If Windows requests administrator approval or a restart for WSL, complete that and Ubuntu's first-run account setup, then rerun the command. Ubuntu may ask for its password to install packages. Check resolved paths without changing the machine with `.\setup.ps1 -CheckOnly`.
 
 3. Generate a fresh report:
 
@@ -39,7 +39,7 @@ Open `data/snapshot.html` in a browser. No installation or key is needed. The te
 
 4. Open `results.html` in the new timestamped folder under `outputs/`.
 
-Defaults: `qwen3.5:2b`, `embeddinggemma:latest`, and `Qwen/Qwen3-Reranker-0.6B`. An NVIDIA GPU is recommended; CPU execution is slower. All services run in the same Ubuntu WSL instance. After restarting the computer, rerun setup to start services. A complete installation on a clean Windows laptop has not yet been verified; see `TESTING.md` for completed checks.
+Defaults: `qwen3.5:2b`, `embeddinggemma:latest`, and `Qwen/Qwen3-Reranker-0.6B`. Ollama listens on `127.0.0.1:11435`; the local reranker listens on `127.0.0.1:11436`. An NVIDIA GPU is recommended; CPU execution is slower. All services run in the same Ubuntu WSL instance. After restarting the computer, rerun `setup.ps1` to reuse or start services and verify the prepared cache. A complete installation on a clean Windows laptop has not yet been verified; see `TESTING.md` for completed checks.
 
 ## Linux
 
@@ -57,7 +57,7 @@ python setup_local.py
 python run.py --limit 10
 ```
 
-`setup_local.py` checks prerequisites, downloads models, starts services and prepares the index. It does not install system packages or create another environment. Rerun it after restarting the machine. `python setup_local.py --check-only` checks prerequisites without starting services or downloading anything.
+`setup_local.py` checks prerequisites, downloads models, starts services and prepares the index. It does not install system packages or create another environment; use an active Python 3.12 environment with Git, Tesseract and Ollama already on `PATH`. Rerun it after restarting the machine. `python setup_local.py --check-only` checks the Python version, files and prerequisites without starting services or downloading anything. Linux is the supported non Windows path.
 
 For NVIDIA acceleration on Linux, use the matching PyTorch build from the [official installation selector](https://pytorch.org/get-started/locally/) in the same environment. The reranker uses CUDA when available and otherwise CPU. Ollama handles answer and embedding model acceleration separately.
 
@@ -106,7 +106,7 @@ python run.py --model qwen3.8:27b-iq2s --limit 10 --jev
 
 Configure the gateway key as described below before running with Jev, or omit `-Jev` / `--jev`. If the runtime is already ready, Linux users can run `python download_qwen38.py` alone to download/register the model. The installer pins the Hugging Face revision and verifies the model's SHA-256 before registration. Weights stay in ignored `.runtime/`; they are not committed.
 
-The file is 8.37 GB. On our RTX 5070 Ti 16 GB, Ollama reported about 8.3 GiB of GPU memory for this model at an 8,192-token context. The timed saved run had the reranker unloaded and reused saved evidence; it does not establish memory or speed for the full concurrent pipeline. Fresh runs retrieve and rerank again. Other hardware can require CPU offload or smaller settings. A clean-machine installation of this option has not been tested.
+The file is 8.37 GB. On our RTX 5070 Ti 16 GB, Ollama reported about 8.3 GiB of GPU memory for this model at an 8,192-token context. The timed saved run had the reranker unloaded and reused saved evidence; it does not establish memory or speed for the full concurrent pipeline. Fresh runs retrieve and rerank again. Other hardware can require CPU offload or smaller settings. A clean-machine installation of this option has not been tested. `download_qwen38.py` uses the package `.runtime/models/qwen38` location; changing `-RuntimeDir` does not relocate that optional GGUF unless you pass its own `--model-dir`.
 
 ## Enable Jev
 
@@ -137,7 +137,17 @@ python -c "import getpass,os,subprocess,sys; os.environ['AI_GATEWAY_API_KEY']=ge
 .\run.ps1 -Prepare
 ```
 
-Initial setup already prepares the index. `-Prepare` prepares or resumes a compatible index. `-Out` must name a folder that does not exist. `-Model` selects a model already installed in the same Ollama service; it does not download one.
+Initial setup already prepares the index. `-Prepare` prepares or resumes a compatible index. `-Out` must name a folder that does not exist; interrupted runs leave partial JSON for inspection and should be rerun with a new output folder. Retrieval failures are recorded per question so remaining questions can continue. `-Model` selects a model already installed in the same Ollama service; it does not download one. `-Distro` selects a different installed WSL distribution and `-RuntimeDir` selects the runtime/venv location (the retrieval cache remains in the repository’s `cache/` folder) when the defaults are unsuitable.
+
+## Live dashboard
+
+After setup, run `.\dashboard.ps1` on Windows, or `python dashboard.py` in the configured Linux environment. Open http://localhost:7860. Enter your Vercel key at the hidden terminal prompt, or supply `AI_GATEWAY_API_KEY` in the server environment. The key stays on the server. Ollama must be running on port 11435; Linux users can override this with `OLLAMA_URL`. `dashboard.ps1` accepts `-Distro`, `-RuntimeDir` and `-Port`.
+
+A timeout can occur after the gateway has processed a request. Retrying it may therefore incur a second charge; the dashboard retries at most once per check.
+
+Choose one of the ten saved FinanceBench cases and an installed Qwen model. The dashboard reuses the experiment's retrieved passages and makes **new** Jev evidence checks, streams a **new** Qwen answer, then asks Jev to check that answer. It does not repeat retrieval or indexing and does not require the reranker or a prepared index once its Python dependencies and answer model are available. Both models receive the same complete saved passages. The benchmark reference is shown below the model responses for the selected question, even if a live call fails. It is never sent to either model.
+
+Generation uses an 8,192-token context, temperature 0 and up to 384 output tokens. Incomplete generations are not sent for approval. Timings include model loading and network overhead. Jev scores are model judgments, not calibrated accuracy estimates. The dashboard is local-only, runs one demonstration at a time, and does not save new runs. A successful run makes two Jev requests. A temporary network failure or HTTP 408/429/5xx can trigger one visible retry per check, which can add requests and latency. Authentication and response-validation failures are not retried. Safe failure details are saved locally in `outputs/dashboard-errors.jsonl`; no keys or upstream response bodies are recorded. Stop with Ctrl+C.
 
 ## Files and credit
 
@@ -153,19 +163,3 @@ Initial setup already prepares the index. `-Prepare` prepares or resumes a compa
 | `dashboard.py` / `dashboard.html` | Live model streaming and Jev checks in a local browser |
 
 Docket is installed from a pinned upstream commit. Its embeddings, keyword search and hybrid retrieval are not new methods introduced here. The local reranker adapter and experiment/reporting code connect those components for this experiment. FinanceBench reference answers are evaluation-only and are never sent to Qwen or Jev. Dataset use is subject to its noncommercial license; see `DATA_LICENSE.md`.
-
-### Live dashboard
-
-For batch runs, each explicit `--out` / `-Out` directory must be new. Interrupted runs leave partial JSON for inspection but cannot be resumed; rerun with a new output directory. Retrieval failures are recorded per question so remaining questions can continue.
-
-After setup, run `./dashboard.ps1` on Windows, or `python dashboard.py` in the configured Linux environment. Open http://localhost:7860. Enter your Vercel key at the hidden terminal prompt, or supply `AI_GATEWAY_API_KEY` in the server environment. The key stays on the server. Ollama must be running on port 11435; Linux users can override this with `OLLAMA_URL`.
-
-A timeout can occur after the gateway has processed a request. Retrying it may therefore incur a second charge; the dashboard retries at most once per check.
-
-Choose one of the ten saved FinanceBench cases and an installed Qwen model. The dashboard reuses the experiment's retrieved passages and makes **new** Jev evidence checks, streams a **new** Qwen answer, then asks Jev to check that answer. It does not repeat retrieval or indexing. Both models receive the same complete saved passages. The benchmark reference is shown below the model responses for the selected question, even if a live call fails. It is never sent to either model.
-
-Generation uses an 8,192-token context, temperature 0 and up to 384 output tokens. Incomplete generations are not sent for approval. Timings include model loading and network overhead. Jev scores are model judgments, not calibrated accuracy estimates. The dashboard is local-only, runs one demonstration at a time, and does not save new runs. A successful run makes two Jev requests. A temporary network failure or HTTP 408/429/5xx can trigger one visible retry per check, which can add requests and latency. Authentication and response-validation failures are not retried. Safe failure details are saved locally in `outputs/dashboard-errors.jsonl`; no keys or upstream response bodies are recorded. Stop with Ctrl+C.
-
-
-
-

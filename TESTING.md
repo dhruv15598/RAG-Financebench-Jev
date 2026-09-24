@@ -9,7 +9,11 @@ On 24 September 2026 in an existing Linux/WSL research environment:
 
 Reproduce offline checks with `python -m pytest tests -q`. With local services ready, `python tests/live_smoke.py` runs the one-report integration test in ignored cache/output folders. The normal `run.py --prepare` uses every report in the manifest; the smoke deliberately uses only one.
 
-A fresh Windows 11 installation and a new complete 28-report ingestion were not executed for this packaging test. OCR availability, installation permissions, first model downloads, GPU memory and service startup vary by machine. No new Jev gateway requests were made during packaging; its optional client reuses the previously exercised request/validation format. Historical snapshot verdicts are not independent correctness labels.
+Setup and launch commands are maintained in [README.md](README.md).
+
+A fresh Windows 11 installation and a new complete 28-report ingestion were not executed for this packaging test. OCR availability, installation permissions, first model downloads, GPU memory and service startup vary by machine. No new Jev gateway requests were made during the initial packaging checks; its optional client reuses the previously exercised request/validation format. Historical snapshot verdicts are not independent correctness labels.
+
+Known clean-machine gaps: the Windows bootstrap has not been run end to end on a clean laptop; WSL installation, Ubuntu first-run setup, sudo permissions, network access, Ollama installation, first model downloads and GPU memory remain machine-dependent. The Linux helper intentionally does not install OS packages. The batch runner requires the prepared index, Ollama and the reranker. The dashboard reuses bundled passages and requires only Ollama plus gateway access; it does not require the index or reranker. Jev additionally requires an explicitly supplied `AI_GATEWAY_API_KEY`; no key is stored by the setup scripts.
 
 
 Qwen 3.8 addition: all ten fixed cases completed on Qwen 3.8 27B UD-IQ2_S with fresh Jev answer checks, using saved baseline passages and prechecks. Median generation time was 3.57 seconds after warm-up. Nine responses were supported, including two abstentions; this is not an accuracy score. The exact model installer passed SHA-256 validation and real Ollama registration against the existing downloaded file. Python compilation and Windows setup parsing passed. The new HTML was checked for all ten answer/reference pairs. Clean-machine download/bootstrap and simultaneous reranker/generator memory use remain unverified.

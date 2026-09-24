@@ -75,6 +75,7 @@ $venvWsl = "$runtimeWsl/venv"
 Invoke-Wsl "sudo apt-get update && sudo DEBIAN_FRONTEND=noninteractive apt-get install -y python3 python3-venv python3-pip git curl tesseract-ocr"
 Invoke-Wsl "command -v ollama >/dev/null || curl -fsSL https://ollama.com/install.sh | sh"
 Invoke-Wsl "python3.12 -m venv '$venvWsl' 2>/dev/null || python3 -m venv '$venvWsl'"
+Invoke-Wsl "'$venvWsl/bin/python' -c 'import sys; sys.exit(0 if sys.version_info >= (3, 12) else `"Python 3.12 or newer is required; use a current Ubuntu distro.`")'"
 Invoke-Wsl "'$venvWsl/bin/python' -m pip install -r '$reqWsl'"
 
 Invoke-Wsl "if ! curl -fsS http://127.0.0.1:11435/api/tags >/dev/null; then nohup env OLLAMA_HOST=127.0.0.1:11435 ollama serve > '$runtimeWsl/logs/ollama.log' 2>&1 & fi"
