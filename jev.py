@@ -70,6 +70,13 @@ ANSWER_CHECK = {
 }
 
 
+class JevError(RuntimeError):
+    """Safe client-authored message; never contains an upstream response body."""
+    def __init__(self, message, retryable=False):
+        super().__init__(message)
+        self.retryable = retryable
+
+
 class NoRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, req, fp, code, msg, headers, newurl):
         return None  # Never forward credentials to a redirected host.
@@ -102,25 +109,25 @@ def evaluate_jev(state, questions, api_key=None, timeout=45):
     except urllib.error.HTTPError as error:
         hints = {401: 'Check or replace the key.', 402: 'Check credits and spending limits.',
                  403: 'Check account/model permissions.', 429: 'Rate limited; try later.'}
-        raise RuntimeError(f'Gateway HTTP {error.code}. ' + hints.get(error.code, 'Check the gateway dashboard and request format.')) from None
+        raise JevError(f'Gateway HTTP {error.code}. ' + hints.get(error.code, 'Check the gateway dashboard and request format.'), retryable=error.code in (408, 429, 500, 502, 503, 504)) from None
     except (urllib.error.URLError, TimeoutError, OSError):
-        raise RuntimeError('Gateway connection failed or timed out. No automatic retry was made.') from None
+        raise JevError('Gateway connection failed or timed out.', retryable=True) from None
     except (ValueError, UnicodeError):
-        raise RuntimeError('Gateway returned an unreadable response.') from None
+        raise JevError('Gateway returned an unreadable response.') from None
     if not isinstance(result, dict) or result.get('model') != MODEL:
-        raise RuntimeError('Unexpected model or response format; do not act on it.')
+        raise JevError('Unexpected model or response format; do not act on it.')
     answers = result.get('answers', {})
     if not isinstance(answers, dict):
-        raise RuntimeError('Missing structured answers.')
+        raise JevError('Missing structured answers.')
     for name, question in questions.items():
         answer = answers.get(name, {})
         if not isinstance(answer, dict) or answer.get('type') != 'choice' or answer.get('choice') not in question['criteria']:
-            raise RuntimeError(f'Invalid choice response for {name}.')
+            raise JevError(f'Invalid choice response for {name}.')
         probs = answer.get('probabilities', {})
         if (not isinstance(probs, dict) or set(probs) != set(question['criteria'])
                 or not all(isinstance(v, (int, float)) and math.isfinite(v) and 0 <= v <= 1 for v in probs.values())
                 or abs(sum(probs.values()) - 1) > 0.02):
-            raise RuntimeError(f'Invalid option probabilities for {name}.')
+            raise JevError(f'Invalid option probabilities for {name}.')
     result['client_elapsed_seconds'] = round(time.perf_counter() - start, 4)
     return result
 

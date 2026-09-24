@@ -150,8 +150,21 @@ Initial setup already prepares the index. `-Prepare` prepares or resumes a compa
 | `reranker.py` | Local endpoint for the Qwen reranker |
 | `render.py` / `Demo.ipynb` | Report and editable notebook |
 | `data/` | Source manifest and saved research results |
+| `dashboard.py` / `dashboard.html` | Live model streaming and Jev checks in a local browser |
 
 Docket is installed from a pinned upstream commit. Its embeddings, keyword search and hybrid retrieval are not new methods introduced here. The local reranker adapter and experiment/reporting code connect those components for this experiment. FinanceBench reference answers are evaluation-only and are never sent to Qwen or Jev. Dataset use is subject to its noncommercial license; see `DATA_LICENSE.md`.
+
+### Live dashboard
+
+For batch runs, each explicit `--out` / `-Out` directory must be new. Interrupted runs leave partial JSON for inspection but cannot be resumed; rerun with a new output directory. Retrieval failures are recorded per question so remaining questions can continue.
+
+After setup, run `./dashboard.ps1` on Windows, or `python dashboard.py` in the configured Linux environment. Open http://localhost:7860. Enter your Vercel key at the hidden terminal prompt, or supply `AI_GATEWAY_API_KEY` in the server environment. The key stays on the server. Ollama must be running on port 11435; Linux users can override this with `OLLAMA_URL`.
+
+A timeout can occur after the gateway has processed a request. Retrying it may therefore incur a second charge; the dashboard retries at most once per check.
+
+Choose one of the ten saved FinanceBench cases and an installed Qwen model. The dashboard reuses the experiment's retrieved passages and makes **new** Jev evidence checks, streams a **new** Qwen answer, then asks Jev to check that answer. It does not repeat retrieval or indexing. Both models receive the same complete saved passages. The benchmark reference is shown below the model responses for the selected question, even if a live call fails. It is never sent to either model.
+
+Generation uses an 8,192-token context, temperature 0 and up to 384 output tokens. Incomplete generations are not sent for approval. Timings include model loading and network overhead. Jev scores are model judgments, not calibrated accuracy estimates. The dashboard is local-only, runs one demonstration at a time, and does not save new runs. A successful run makes two Jev requests. A temporary network failure or HTTP 408/429/5xx can trigger one visible retry per check, which can add requests and latency. Authentication and response-validation failures are not retried. Safe failure details are saved locally in `outputs/dashboard-errors.jsonl`; no keys or upstream response bodies are recorded. Stop with Ctrl+C.
 
 
 

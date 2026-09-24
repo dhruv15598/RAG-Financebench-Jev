@@ -61,6 +61,8 @@ def main() -> int:
     ap.add_argument("--ollama-port", type=int, default=11435)
     ap.add_argument("--reranker-port", type=int, default=11436)
     args = ap.parse_args()
+    if sys.version_info < (3, 12):
+        raise SystemExit('Python 3.12 or newer is required; Python 3.12 is the tested version.')
     root = Path(__file__).resolve().parent
     runtime = (root / args.runtime_dir).resolve()
     model_dir = (root / args.model_dir).resolve()

@@ -10,6 +10,7 @@ __pycache__/
 *.pyc
 .env
 .env.*
+api_key.txt
 *.key
 *.pem
 *.log

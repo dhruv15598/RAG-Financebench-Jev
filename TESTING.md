@@ -13,3 +13,9 @@ A fresh Windows 11 installation and a new complete 28-report ingestion were not 
 
 
 Qwen 3.8 addition: all ten fixed cases completed on Qwen 3.8 27B UD-IQ2_S with fresh Jev answer checks, using saved baseline passages and prechecks. Median generation time was 3.57 seconds after warm-up. Nine responses were supported, including two abstentions; this is not an accuracy score. The exact model installer passed SHA-256 validation and real Ollama registration against the existing downloaded file. Python compilation and Windows setup parsing passed. The new HTML was checked for all ten answer/reference pairs. Clean-machine download/bootstrap and simultaneous reranker/generator memory use remain unverified.
+
+## Live dashboard verification (24 September 2026)
+
+Browser runs used saved passages, fresh Jev evidence checks, streamed Qwen 3.8 answers and fresh Jev answer checks. PepsiCo completed with 1 percentage point (supported); Jev round trips were 0.38 s and 0.61 s, generation 39.84 s including loading. Verizon also completed (supported); Jev took 0.83 s and 0.89 s, generation 67.47 s including loading. Reference answers now appear on question selection, including when a live run fails. They are not model inputs.
+
+`python -m pytest tests -q`: nine tests passed, including three dashboard tests covering cross-site/unknown-input rejection, upstream-error redaction, run-lock release and bounded transient retries. An earlier gateway failure was not reproduced in four direct checks; the dashboard now exposes safe error details and retries temporary failures once. This does not establish production reliability. The dashboard reuses saved retrieval; it is not a new retrieval benchmark. Browser verification used Windows with services in WSL. The new launcher has not been tested on a clean machine.

@@ -148,10 +148,10 @@ def execute(args, manifest):
     with httpx.Client(timeout=600) as client:
         for item in manifest['questions'][:args.limit]:
             row = dict(item)
-            start = time.perf_counter(); hits = retriever.retrieve(item['question'], k=6, candidates=40)
-            state = question_state(item['question'], hits)
-            row.update(evidence=state['evidence'], retrieval_seconds=time.perf_counter() - start)
             try:
+                start = time.perf_counter(); hits = retriever.retrieve(item['question'], k=6, candidates=40)
+                state = question_state(item['question'], hits)
+                row.update(evidence=state['evidence'], retrieval_seconds=time.perf_counter() - start)
                 if args.jev:
                     row['precheck'] = evaluate_jev(state, EVIDENCE_CHECK)
                     row['evidence_approved'] = row['precheck']['answers']['evidence_support']['choice'] == 'sufficient'
