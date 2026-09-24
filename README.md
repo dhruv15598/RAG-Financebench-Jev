@@ -4,6 +4,14 @@ Built on [Docket by Aditya](https://github.com/adityam23/docket). Docket supplie
 
 The flow is: retrieve passages → rerank → Jev checks evidence sufficiency → Qwen answers → Jev checks answer support. Jev is optional. Its scores are model judgments, not proven probabilities of correctness. Diagnostic runs retain cases even when the evidence check rejects them.
 
+## Why FinanceBench?
+
+We use [FinanceBench, published by Patronus AI](https://huggingface.co/datasets/PatronusAI/financebench), to test question answering over company financial reports. Its public dataset contains 150 questions with reference answers and supporting evidence. Questions cover finding reported figures, comparing periods and calculating financial metrics, making it useful for examining retrieval failures and numerical mistakes.
+
+This repository runs **ten fixed development questions** against a **28-report corpus** from our earlier pilot. Docket retrieves passages from the reports, Qwen generates an answer, and optional Jev checks judge evidence sufficiency and answer support. The report then displays the FinanceBench reference answer for comparison. Reference answers and annotated evidence are not supplied as answer hints to Qwen or Jev.
+
+These ten cases are a selected subset, not a full FinanceBench evaluation or an unbiased accuracy estimate. Jev's verdicts are separate from the benchmark references: an answer can be judged supported and still be wrong. FinanceBench uses a noncommercial license; see [data attribution and licensing](DATA_LICENSE.md).
+
 ## View saved results
 
 Open `data/snapshot.html` in a browser. No installation or key is needed. The ten historical cases include retrieved passages, model answers, Jev judgments and FinanceBench references. They are selected development cases, not a random test set.
