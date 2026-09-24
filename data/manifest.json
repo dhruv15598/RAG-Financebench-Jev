@@ -1,0 +1,206 @@
+{
+  "docket_revision": "d97a18063e37894d02aafc3b35da0c516bf14c83",
+  "docket_origin": "https://github.com/adityam23/docket",
+  "dataset": {
+    "revision": "e04404e3a97f69f79c14d42f24981a1c9c3bcd18",
+    "url": "https://huggingface.co/datasets/PatronusAI/financebench/resolve/e04404e3a97f69f79c14d42f24981a1c9c3bcd18/financebench_merged.jsonl",
+    "sha256": "7a1c81789e0fd2f1c37057a7ec0097756d726b05e7228e68e57db8e18c54fd0b",
+    "license": "CC BY-NC 4.0 per dataset card; source reports retain their original rights"
+  },
+  "source_document_revision": "cc39aeb4afdf33909ee1412188bf89035950c2eb",
+  "selection": "All 28 source reports from existing 30-question development pilot; fixed ten historical question IDs. Development sample, not unbiased evaluation.",
+  "documents": [
+    {
+      "doc_id": "BOEING_2022_10K",
+      "url": "https://raw.githubusercontent.com/patronus-ai/financebench/cc39aeb4afdf33909ee1412188bf89035950c2eb/pdfs/BOEING_2022_10K.pdf",
+      "sha256": "09285ff7ee737d3302977104aa05cc53c9dfb0161f3461a89b583dc38b9f2ab6"
+    },
+    {
+      "doc_id": "WALMART_2018_10K",
+      "url": "https://raw.githubusercontent.com/patronus-ai/financebench/cc39aeb4afdf33909ee1412188bf89035950c2eb/pdfs/WALMART_2018_10K.pdf",
+      "sha256": "661512df698c895a4a5ab3d4ab879fd8ffc8f17a9038e27bcb208401982b6c15"
+    },
+    {
+      "doc_id": "ULTABEAUTY_2023Q4_EARNINGS",
+      "url": "https://raw.githubusercontent.com/patronus-ai/financebench/cc39aeb4afdf33909ee1412188bf89035950c2eb/pdfs/ULTABEAUTY_2023Q4_EARNINGS.pdf",
+      "sha256": "c7df6210a627042e231c9579982648a43f3ff8b630b4020540330c2a85e0d781"
+    },
+    {
+      "doc_id": "VERIZON_2022_10K",
+      "url": "https://raw.githubusercontent.com/patronus-ai/financebench/cc39aeb4afdf33909ee1412188bf89035950c2eb/pdfs/VERIZON_2022_10K.pdf",
+      "sha256": "403d7346e8a059472863d1789527f16e5127a61c2f6c4429012e6227f27576d7"
+    },
+    {
+      "doc_id": "NIKE_2018_10K",
+      "url": "https://raw.githubusercontent.com/patronus-ai/financebench/cc39aeb4afdf33909ee1412188bf89035950c2eb/pdfs/NIKE_2018_10K.pdf",
+      "sha256": "31de66f1e37cabf1785e0ffa66955bf003bf2a9dcf3f4ebe93732d063b7b6ebe"
+    },
+    {
+      "doc_id": "PEPSICO_2023Q1_EARNINGS",
+      "url": "https://raw.githubusercontent.com/patronus-ai/financebench/cc39aeb4afdf33909ee1412188bf89035950c2eb/pdfs/PEPSICO_2023Q1_EARNINGS.pdf",
+      "sha256": "a705483ea6c548a2f67c421bc24ced391a6beb8487600b44b54e9ae2aca1f31c"
+    },
+    {
+      "doc_id": "MICROSOFT_2023_10K",
+      "url": "https://raw.githubusercontent.com/patronus-ai/financebench/cc39aeb4afdf33909ee1412188bf89035950c2eb/pdfs/MICROSOFT_2023_10K.pdf",
+      "sha256": "e534af371c824aab19b8d01f8bc0e9d1e0a3fb418a33119c5224a53d20a0d37b"
+    },
+    {
+      "doc_id": "WALMART_2019_10K",
+      "url": "https://raw.githubusercontent.com/patronus-ai/financebench/cc39aeb4afdf33909ee1412188bf89035950c2eb/pdfs/WALMART_2019_10K.pdf",
+      "sha256": "f1d1b052c2b68c5d68e3575de7069dc47914f03abb02771d2629b10bf7d9e377"
+    },
+    {
+      "doc_id": "PFIZER_2021_10K",
+      "url": "https://raw.githubusercontent.com/patronus-ai/financebench/cc39aeb4afdf33909ee1412188bf89035950c2eb/pdfs/PFIZER_2021_10K.pdf",
+      "sha256": "ff3307d5f633c5dbe59a976f5ff5e086af04ba5a5135f2b6411c89538a22a665"
+    },
+    {
+      "doc_id": "CORNING_2022_10K",
+      "url": "https://raw.githubusercontent.com/patronus-ai/financebench/cc39aeb4afdf33909ee1412188bf89035950c2eb/pdfs/CORNING_2022_10K.pdf",
+      "sha256": "a63f102f045826b38ad21a606c33710f62932646fd7c0f1852ce411a4397a3ee"
+    },
+    {
+      "doc_id": "BESTBUY_2017_10K",
+      "url": "https://raw.githubusercontent.com/patronus-ai/financebench/cc39aeb4afdf33909ee1412188bf89035950c2eb/pdfs/BESTBUY_2017_10K.pdf",
+      "sha256": "4570187fa697f252e08c8f99c409446fbcde05b08358851d34d4cb1c8bd1cec8"
+    },
+    {
+      "doc_id": "MGMRESORTS_2022Q4_EARNINGS",
+      "url": "https://raw.githubusercontent.com/patronus-ai/financebench/cc39aeb4afdf33909ee1412188bf89035950c2eb/pdfs/MGMRESORTS_2022Q4_EARNINGS.pdf",
+      "sha256": "fe9126b17c3656e50d53741b13cb5fb233d4adaf922e4d84072b1d5e564fbfbd"
+    },
+    {
+      "doc_id": "AES_2022_10K",
+      "url": "https://raw.githubusercontent.com/patronus-ai/financebench/cc39aeb4afdf33909ee1412188bf89035950c2eb/pdfs/AES_2022_10K.pdf",
+      "sha256": "9c5de2227534c4d6bf3d805f635bad5d82eddf8e4183a85a3d1311b48b50291d"
+    },
+    {
+      "doc_id": "BOEING_2018_10K",
+      "url": "https://raw.githubusercontent.com/patronus-ai/financebench/cc39aeb4afdf33909ee1412188bf89035950c2eb/pdfs/BOEING_2018_10K.pdf",
+      "sha256": "6f1ace34b3b01778ad7d92d43ccd2f76513d5159ef48fbc07b510296cf2d07dc"
+    },
+    {
+      "doc_id": "AMERICANEXPRESS_2022_10K",
+      "url": "https://raw.githubusercontent.com/patronus-ai/financebench/cc39aeb4afdf33909ee1412188bf89035950c2eb/pdfs/AMERICANEXPRESS_2022_10K.pdf",
+      "sha256": "d3bbc7ab23d6160e07eab50a359e4d68c40efff9fde3baa168e7c40e06f568e6"
+    },
+    {
+      "doc_id": "AMCOR_2023_10K",
+      "url": "https://raw.githubusercontent.com/patronus-ai/financebench/cc39aeb4afdf33909ee1412188bf89035950c2eb/pdfs/AMCOR_2023_10K.pdf",
+      "sha256": "84d7a0291a12f4e68352750dccda3754c78eefdf06e0b5462046357a1ed53332"
+    },
+    {
+      "doc_id": "BLOCK_2020_10K",
+      "url": "https://raw.githubusercontent.com/patronus-ai/financebench/cc39aeb4afdf33909ee1412188bf89035950c2eb/pdfs/BLOCK_2020_10K.pdf",
+      "sha256": "c19a9fb25db3270e3a908c202855f4a54f000a06bf19a8b284331810228646fe"
+    },
+    {
+      "doc_id": "JOHNSON_JOHNSON_2023_8K_dated-2023-08-30",
+      "url": "https://raw.githubusercontent.com/patronus-ai/financebench/cc39aeb4afdf33909ee1412188bf89035950c2eb/pdfs/JOHNSON_JOHNSON_2023_8K_dated-2023-08-30.pdf",
+      "sha256": "0601a4b9f15e4400ced1b2ccb81c309cb66844fbac6b975a76dc490501bea95a"
+    },
+    {
+      "doc_id": "AMD_2022_10K",
+      "url": "https://raw.githubusercontent.com/patronus-ai/financebench/cc39aeb4afdf33909ee1412188bf89035950c2eb/pdfs/AMD_2022_10K.pdf",
+      "sha256": "a3bd74088fae0ad4aa03d04998a1f4c64fd0b3c693841601b0ac49b46cf5c1f4"
+    },
+    {
+      "doc_id": "AMAZON_2017_10K",
+      "url": "https://raw.githubusercontent.com/patronus-ai/financebench/cc39aeb4afdf33909ee1412188bf89035950c2eb/pdfs/AMAZON_2017_10K.pdf",
+      "sha256": "f8af08ff6c4147351ec3a6e5e2c74e104678ce68fb0d6d476b1e43f685c09a3f"
+    },
+    {
+      "doc_id": "Pfizer_2023Q2_10Q",
+      "url": "https://raw.githubusercontent.com/patronus-ai/financebench/cc39aeb4afdf33909ee1412188bf89035950c2eb/pdfs/Pfizer_2023Q2_10Q.pdf",
+      "sha256": "bf6c059a1dd71bd56581c94bce650bd85b56de2f4d0a25b45f05804a8bd6684d"
+    },
+    {
+      "doc_id": "CORNING_2020_10K",
+      "url": "https://raw.githubusercontent.com/patronus-ai/financebench/cc39aeb4afdf33909ee1412188bf89035950c2eb/pdfs/CORNING_2020_10K.pdf",
+      "sha256": "ef471ab9ff6067f117977df6df8b4b5007066286b733981475ac2ccf48d91e59"
+    },
+    {
+      "doc_id": "AMCOR_2023Q2_10Q",
+      "url": "https://raw.githubusercontent.com/patronus-ai/financebench/cc39aeb4afdf33909ee1412188bf89035950c2eb/pdfs/AMCOR_2023Q2_10Q.pdf",
+      "sha256": "71c39c3f338fc81a99e128e8e871e265818657670a7d29a62c454c905f94524c"
+    },
+    {
+      "doc_id": "MGMRESORTS_2018_10K",
+      "url": "https://raw.githubusercontent.com/patronus-ai/financebench/cc39aeb4afdf33909ee1412188bf89035950c2eb/pdfs/MGMRESORTS_2018_10K.pdf",
+      "sha256": "1b540737f91716aaa23b062499e6cab9c51d258e151f37eb8c65646bb588a0da"
+    },
+    {
+      "doc_id": "ADOBE_2022_10K",
+      "url": "https://raw.githubusercontent.com/patronus-ai/financebench/cc39aeb4afdf33909ee1412188bf89035950c2eb/pdfs/ADOBE_2022_10K.pdf",
+      "sha256": "ce8c716abac26bfa38ae6b71d703112852c8591a4bb19f7c1177beb1dfc87ad2"
+    },
+    {
+      "doc_id": "NIKE_2023_10K",
+      "url": "https://raw.githubusercontent.com/patronus-ai/financebench/cc39aeb4afdf33909ee1412188bf89035950c2eb/pdfs/NIKE_2023_10K.pdf",
+      "sha256": "51f5a0fc6ede20de4f5cfdeae8791a57bdd65c95db2ceb263eb120696ff90172"
+    },
+    {
+      "doc_id": "3M_2018_10K",
+      "url": "https://raw.githubusercontent.com/patronus-ai/financebench/cc39aeb4afdf33909ee1412188bf89035950c2eb/pdfs/3M_2018_10K.pdf",
+      "sha256": "faf10c53fc6f1a8aa346ec3db79145e3ae6fbb3753c8064924e174d0a973934d"
+    },
+    {
+      "doc_id": "AMCOR_2022_8K_dated-2022-07-01",
+      "url": "https://raw.githubusercontent.com/patronus-ai/financebench/cc39aeb4afdf33909ee1412188bf89035950c2eb/pdfs/AMCOR_2022_8K_dated-2022-07-01.pdf",
+      "sha256": "1de32e72c265486469f3b1c7cbfbe064a27055e60f7b43a81439986dda9025ad"
+    }
+  ],
+  "questions": [
+    {
+      "id": "financebench_id_06247",
+      "company": "Walmart",
+      "question": "What is FY2018 days payable outstanding (DPO) for Walmart? DPO is defined as: 365 * (average accounts payable between FY2017 and FY2018) / (FY2018 COGS + change in inventory between FY2017 and FY2018). Round your answer to two decimal places. Please base your judgments on the information provided primarily in the statement of financial position and the P&L statement."
+    },
+    {
+      "id": "financebench_id_01476",
+      "company": "PepsiCo",
+      "question": "As of FY2023Q1, by how many percentage points did Pepsico raise full year guidance in respect of core constant currency EPS growth?"
+    },
+    {
+      "id": "financebench_id_00005",
+      "company": "Corning",
+      "question": "Does Corning have positive working capital based on FY2022 data? If working capital is not a useful or relevant metric for this company, then please state that and explain why."
+    },
+    {
+      "id": "financebench_id_02608",
+      "company": "Best Buy",
+      "question": "In agreement with the information outlined in the income statement, what is the FY2015 - FY2017 3 year average net profit margin (as a %) for Best Buy? Answer in units of percents and round to one decimal place."
+    },
+    {
+      "id": "financebench_id_01148",
+      "company": "Amcor",
+      "question": "What industry does AMCOR primarily operate in?"
+    },
+    {
+      "id": "financebench_id_07661",
+      "company": "Block",
+      "question": "Using the cash flow statement, answer the following question to the best of your abilities: how much did Block (formerly known as Square) generate in cash flow from operating activities in FY2020? Answer in USD millions."
+    },
+    {
+      "id": "financebench_id_01490",
+      "company": "Johnson & Johnson",
+      "question": "What is the amount of the gain accruing to JnJ as a result of the separation of its Consumer Health business segment, as of August 30, 2023?"
+    },
+    {
+      "id": "financebench_id_01279",
+      "company": "AMD",
+      "question": "Among operations, investing, and financing activities, which brought in the most (or lost the least) cash flow for AMD in FY22?"
+    },
+    {
+      "id": "financebench_id_06655",
+      "company": "Amazon",
+      "question": "What is Amazon's FY2017 days payable outstanding (DPO)? DPO is defined as: 365 * (average accounts payable between FY2016 and FY2017) / (FY2017 COGS + change in inventory between FY2016 and FY2017). Round your answer to two decimal places. Address the question by using the line items and information shown within the balance sheet and the P&L statement."
+    },
+    {
+      "id": "financebench_id_00566",
+      "company": "Verizon",
+      "question": "Has Verizon increased its debt on balance sheet between 2022 and the 2021 fiscal period?"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "date": "2026-09-24",
+  "environment": "Existing WSL research environment; not clean Windows installation",
+  "offline_tests": {
+    "passed": 6,
+    "command": "python -m pytest tests -q"
+  },
+  "live_smoke": {
+    "reports": 1,
+    "chunks": 35,
+    "stages": [
+      "PDF extraction",
+      "original Docket chunking",
+      "live EmbeddingGemma embedding",
+      "default Docket hybrid retrieval",
+      "live reranking",
+      "Qwen3.5 2B generation",
+      "HTML rendering"
+    ],
+    "question": "As of FY2023Q1, by how many percentage points did Pepsico raise full year guidance in respect of core constant currency EPS growth?",
+    "answer": "Pepsico raised full-year guidance for core constant currency EPS growth by **1 percentage point** to 9 percent. This represents an increase from the previously expected 8 percent (Source: PEPSICO_2023Q1_EARNINGS, page 3).",
+    "reference_answer": "Pepsico raised full year guidance in respect of core constant currency EPS growth by 1 percentage point.",
+    "answer_complete": true,
+    "generation_seconds": 28.073969254000986
+  },
+  "packaged_adapter": {
+    "device": "cpu",
+    "real_weights": true,
+    "positive_score": 0.9996539354324341,
+    "negative_score": 3.265427585574798e-05,
+    "wrong_model_http_status": 400,
+    "truncation": false
+  },
+  "limits": [
+    "No fresh Windows setup tested",
+    "No new complete 28-report ingestion during packaging",
+    "No new Jev API calls during packaging"
+  ]
+}

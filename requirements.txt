@@ -1,0 +1,10 @@
+docket[ingest] @ git+https://github.com/adityam23/docket.git@d97a18063e37894d02aafc3b35da0c516bf14c83
+httpx>=0.27,<1
+torch>=2.6,<3
+transformers>=4.51,<5
+fastapi>=0.115,<1
+uvicorn>=0.30,<1
+PyMuPDF>=1.24,<2
+pytest>=8,<9
+nbformat>=5,<6
+ipykernel>=6,<8
