@@ -19,6 +19,8 @@ from run import SYSTEM
 
 ROOT = Path(__file__).resolve().parent
 ROWS = json.loads((ROOT / 'data/snapshot.json').read_text(encoding='utf-8-sig'))['rows']
+PAGE_EVIDENCE = {r['id']: r['evidence'] for r in json.loads((ROOT / 'data/dashboard-evidence.json').read_text(encoding='utf-8'))['rows']}
+ROWS = [{**row, 'evidence': PAGE_EVIDENCE[row['id']]} for row in ROWS]
 OLLAMA = os.environ.get('OLLAMA_URL', 'http://127.0.0.1:11435').rstrip('/')
 app = FastAPI(docs_url=None, redoc_url=None)
 app.add_middleware(TrustedHostMiddleware, allowed_hosts=['localhost', '127.0.0.1'])

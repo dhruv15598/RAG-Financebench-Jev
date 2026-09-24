@@ -23,3 +23,9 @@ Qwen 3.8 addition: all ten fixed cases completed on Qwen 3.8 27B UD-IQ2_S with f
 Browser runs used saved passages, fresh Jev evidence checks, streamed Qwen 3.8 answers and fresh Jev answer checks. PepsiCo completed with 1 percentage point (supported); Jev round trips were 0.38 s and 0.61 s, generation 39.84 s including loading. Verizon also completed (supported); Jev took 0.83 s and 0.89 s, generation 67.47 s including loading. Reference answers now appear on question selection, including when a live run fails. They are not model inputs.
 
 `python -m pytest tests -q`: nine tests passed, including three dashboard tests covering cross-site/unknown-input rejection, upstream-error redaction, run-lock release and bounded transient retries. An earlier gateway failure was not reproduced in four direct checks; the dashboard now exposes safe error details and retries temporary failures once. This does not establish production reliability. The dashboard reuses saved retrieval; it is not a new retrieval benchmark. Browser verification used Windows with services in WSL. The new launcher has not been tested on a clean machine.
+
+## Table-continuation regression
+
+Eleven tests pass after page expansion. Regression checks confirm the corrected AMD page contains operating 3,565, investing 1,999 and financing (3,264), with the year and units. All ten cases preserve their originally selected document/page order. Additional tests cover overlap removal, numeric chunk order, document boundaries, duplicate pages and oversized/missing-page failures. Corrected evidence was rebuilt from the existing full corpus. New model-answer quality is not established by these deterministic tests; historical verdicts were not reused for the expanded evidence.
+
+The user confirmed that the live dashboard worked after the corrected-evidence restart. This is a manual smoke-check confirmation, not a new benchmark score or an independently captured answer evaluation.

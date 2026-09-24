@@ -2,7 +2,7 @@
 
 Built on [Docket by Aditya](https://github.com/adityam23/docket). Docket supplies document ingestion and hybrid retrieval. This project adds **Jev checks through the Vercel AI Gateway**, with scripts, a notebook and reports for evaluating financial-document answers.
 
-The flow is: retrieve passages → rerank → Jev checks evidence sufficiency → Qwen answers → Jev checks answer support. Jev is optional. Its scores are model judgments, not proven probabilities of correctness. Diagnostic runs retain cases even when the evidence check rejects them.
+The flow is: retrieve passages → rerank → expand to source pages → Jev checks evidence sufficiency → Qwen answers → Jev checks answer support. Jev is optional. Its scores are model judgments, not proven probabilities of correctness. Diagnostic runs retain cases even when the evidence check rejects them.
 
 ## Why FinanceBench?
 
@@ -145,7 +145,7 @@ After setup, run `.\dashboard.ps1` on Windows, or `python dashboard.py` in the c
 
 A timeout can occur after the gateway has processed a request. Retrying it may therefore incur a second charge; the dashboard retries at most once per check.
 
-Choose one of the ten saved FinanceBench cases and an installed Qwen model. The dashboard reuses the experiment's retrieved passages and makes **new** Jev evidence checks, streams a **new** Qwen answer, then asks Jev to check that answer. It does not repeat retrieval or indexing and does not require the reranker or a prepared index once its Python dependencies and answer model are available. Both models receive the same complete saved passages. The benchmark reference is shown below the model responses for the selected question, even if a live call fails. It is never sent to either model.
+Choose one of the ten saved FinanceBench cases and an installed Qwen model. The dashboard reuses the experiment's selected source pages, expanded to include their complete indexed text and makes **new** Jev evidence checks, streams a **new** Qwen answer, then asks Jev to check that answer. It does not repeat retrieval or indexing and does not require the reranker or a prepared index once its Python dependencies and answer model are available. Both models receive the same expanded page text. Historical reports retain their original chunks and verdicts. The benchmark reference is shown below the model responses for the selected question, even if a live call fails. It is never sent to either model.
 
 Generation uses an 8,192-token context, temperature 0 and up to 384 output tokens. Incomplete generations are not sent for approval. Timings include model loading and network overhead. Jev scores are model judgments, not calibrated accuracy estimates. The dashboard is local-only, runs one demonstration at a time, and does not save new runs. A successful run makes two Jev requests. A temporary network failure or HTTP 408/429/5xx can trigger one visible retry per check, which can add requests and latency. Authentication and response-validation failures are not retried. Safe failure details are saved locally in `outputs/dashboard-errors.jsonl`; no keys or upstream response bodies are recorded. Stop with Ctrl+C.
 
@@ -163,3 +163,15 @@ Generation uses an 8,192-token context, temperature 0 and up to 384 output token
 | `dashboard.py` / `dashboard.html` | Live model streaming and Jev checks in a local browser |
 
 Docket is installed from a pinned upstream commit. Its embeddings, keyword search and hybrid retrieval are not new methods introduced here. The local reranker adapter and experiment/reporting code connect those components for this experiment. FinanceBench reference answers are evaluation-only and are never sent to Qwen or Jev. Dataset use is subject to its noncommercial license; see `DATA_LICENSE.md`.
+
+## Complete-page evidence fix
+
+`evidence.py` expands selected chunks to all indexed chunks on the same document/page, removes overlapping text and deduplicates repeated page hits. It preserves retrieval rank and does not use reference answers or company-specific routing. This restores table continuations such as AMD’s investing and financing totals without rebuilding embeddings. It does not reconstruct table cells or join tables across different pages, and it does not prevent unrelated companies from being retrieved.
+
+Fresh batch runs apply this automatically. The dashboard uses `data/dashboard-evidence.json`, a separate evidence-only artifact; historical answer reports are unchanged. Rebuild it from a prepared corpus with:
+
+```bash
+python evidence.py --index cache/index/corpus.jsonl
+```
+
+Expansion refuses evidence exceeding 3,600 words rather than cutting off page text. This is a conservative word budget, not an exact model-token guarantee; unusually token-dense pages can still need a larger context or a smaller retrieval set.

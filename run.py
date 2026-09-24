@@ -4,6 +4,7 @@ import argparse, hashlib, json, math, os, shutil, subprocess, time
 from datetime import datetime, timezone
 from pathlib import Path
 import httpx
+from evidence import page_lookup, expand_pages
 
 ROOT = Path(__file__).resolve().parent
 SYSTEM = ('Answer the financial question using only the supplied evidence. Respect company, year, '
@@ -134,12 +135,13 @@ def execute(args, manifest):
     if set(corpus.doc_ids()) != {d['doc_id'] for d in manifest['documents']}:
         raise ValueError('Prepared reports differ from the complete manifest.')
     retriever = load_retriever(settings(args), corpus=corpus)
+    pages = page_lookup(corpus.chunks)
     if not retriever.embed_query or not retriever.reranker: raise RuntimeError('Hybrid/reranker endpoints required.')
     if args.jev and not os.environ.get('AI_GATEWAY_API_KEY'): raise ValueError('--jev requires AI_GATEWAY_API_KEY.')
     if args.jev:
         from jev import evaluate_jev, EVIDENCE_CHECK, ANSWER_CHECK
     # Loading reference answers is deferred until generation has completed.
-    result = {'protocol': {'retrieval': 'Unmodified Aditya Docket BM25 + dense + RRF + reranker; k6/candidates40',
+    result = {'protocol': {'retrieval': 'Aditya Docket BM25 + dense + RRF + reranker; k6/candidates40; selected chunks expanded to complete source pages',
         'docket_revision': manifest['docket_revision'], 'model': args.model, 'embedding': args.embed_model,
         'reranker': args.rerank_model, 'jev_enabled': args.jev,
         'selection': 'Fixed historical ten development cases, first N; not unbiased accuracy evaluation',
@@ -150,6 +152,7 @@ def execute(args, manifest):
             row = dict(item)
             try:
                 start = time.perf_counter(); hits = retriever.retrieve(item['question'], k=6, candidates=40)
+                hits = expand_pages(hits, pages)
                 state = question_state(item['question'], hits)
                 row.update(evidence=state['evidence'], retrieval_seconds=time.perf_counter() - start)
                 if args.jev:
