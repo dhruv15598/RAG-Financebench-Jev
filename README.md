@@ -14,6 +14,8 @@ These ten cases are a selected subset, not a full FinanceBench evaluation or an 
 
 ## View saved results
 
+The latest saved run is [Qwen 3.8 27B UD-IQ2_S](data/qwen38-results.html), with [raw results](data/qwen38-results.json). Download the HTML and open it in a browser; GitHub displays HTML source. All ten cases completed, with median answer generation of 3.57 seconds after warm-up. Jev supported nine responses, including two abstentions; this is not 90% answer accuracy. The run reused the same retrieved passages and evidence checks as the 2B baseline, then generated new answers and new Jev answer checks.
+
 Open `data/snapshot.html` in a browser. No installation or key is needed. The ten historical cases include retrieved passages, model answers, Jev judgments and FinanceBench references. They are selected development cases, not a random test set.
 
 `Demo.ipynb` is the editable notebook version. Open it in VS Code or Jupyter; executing cells requires Python with the repository dependencies.
@@ -60,6 +62,52 @@ python run.py --limit 10
 For NVIDIA acceleration on Linux, use the matching PyTorch build from the [official installation selector](https://pytorch.org/get-started/locally/) in the same environment. The reranker uses CUDA when available and otherwise CPU. Ollama handles answer and embedding model acceleration separately.
 
 
+## Models and switching
+
+| Role | Model | Use in this repository |
+| --- | --- | --- |
+| Answer generation (default) | Qwen 3.5 2B | Local baseline; saved report uses Q8_0. Setup pulls the Ollama tag, which can change upstream. |
+| Answer generation (optional) | Qwen 3.8 27B UD-IQ2_S | Exact revision and checksum pinned; latest saved ten-case report. |
+| Evidence and answer checks | TypeSafe Jev | Optional Vercel AI Gateway calls; enabled with `-Jev` / `--jev`. |
+| Embeddings | EmbeddingGemma 300M | Turns questions and passages into vectors for retrieval. |
+| Reranking | Qwen3-Reranker-0.6B | Ranks retrieved passages before answer generation. |
+
+After installing the desired answer model, switch with the model argument. This keeps the same corpus and retrieval configuration; the embedding index does not need rebuilding.
+
+```powershell
+# Windows
+.\run.ps1 -Model qwen3.5:2b -Limit 10 -Jev
+.\run.ps1 -Model qwen3.8:27b-iq2s -Limit 10 -Jev
+```
+
+```bash
+# Linux
+python run.py --model qwen3.5:2b --limit 10 --jev
+python run.py --model qwen3.8:27b-iq2s --limit 10 --jev
+```
+
+Omit the Jev flag to run without gateway checks. Each command writes a separate timestamped report. Answer generation uses an 8,192-token context, temperature 0, thinking disabled and a 384-token output limit. Other Ollama models can be selected by their installed name but are not validated by this project; thinking/template support and memory requirements can differ. Qwen 2.5 1.5B was used in earlier research but is not included in this packaged comparison. Qwen 3.5 9B Q6_K was downloaded during model selection, but has no completed result set here.
+
+## Install optional Qwen 3.8
+
+The default remains Qwen 3.5 2B. To install the exact **Qwen 3.8 27B UD-IQ2_S** used in the latest report:
+
+```powershell
+# Windows, in the repository folder
+.\setup.ps1 -Qwen38
+.\run.ps1 -Model qwen3.8:27b-iq2s -Limit 10 -Jev
+```
+
+```bash
+# Linux, with the Python environment activated
+python setup_local.py --qwen38
+python run.py --model qwen3.8:27b-iq2s --limit 10 --jev
+```
+
+Configure the gateway key as described below before running with Jev, or omit `-Jev` / `--jev`. If the runtime is already ready, Linux users can run `python download_qwen38.py` alone to download/register the model. The installer pins the Hugging Face revision and verifies the model's SHA-256 before registration. Weights stay in ignored `.runtime/`; they are not committed.
+
+The file is 8.37 GB. On our RTX 5070 Ti 16 GB, Ollama reported about 8.3 GiB of GPU memory for this model at an 8,192-token context. The timed saved run had the reranker unloaded and reused saved evidence; it does not establish memory or speed for the full concurrent pipeline. Fresh runs retrieve and rerank again. Other hardware can require CPU offload or smaller settings. A clean-machine installation of this option has not been tested.
+
 ## Enable Jev
 
 Create a Vercel AI Gateway API key and set a spending limit. Jev receives the question and retrieved passages; its answer check also receives Qwen's answer. Only use documents permitted to be sent to that service.
@@ -104,5 +152,7 @@ Initial setup already prepares the index. `-Prepare` prepares or resumes a compa
 | `data/` | Source manifest and saved research results |
 
 Docket is installed from a pinned upstream commit. Its embeddings, keyword search and hybrid retrieval are not new methods introduced here. The local reranker adapter and experiment/reporting code connect those components for this experiment. FinanceBench reference answers are evaluation-only and are never sent to Qwen or Jev. Dataset use is subject to its noncommercial license; see `DATA_LICENSE.md`.
+
+
 
 

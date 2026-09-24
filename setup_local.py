@@ -55,6 +55,7 @@ def _wait(url: str, seconds: int = 90) -> None:
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--check-only", action="store_true")
+    ap.add_argument("--qwen38", action="store_true", help="Also download Qwen 3.8 27B UD-IQ2_S (8.37 GB).")
     ap.add_argument("--runtime-dir", type=Path, default=Path(".runtime"))
     ap.add_argument("--model-dir", type=Path, default=Path(".runtime/models/reranker"))
     ap.add_argument("--ollama-port", type=int, default=11435)
@@ -90,6 +91,8 @@ def main() -> int:
     _wait(ollama_url + "/api/tags")
     _run([commands["ollama"], "pull", "embeddinggemma:latest"], env=ollama_env)
     _run([commands["ollama"], "pull", "qwen3.5:2b"], env=ollama_env)
+    if args.qwen38:
+        _run([sys.executable, str(root / "download_qwen38.py"), "--ollama-url", ollama_url])
 
     try:
         from huggingface_hub import snapshot_download
@@ -104,8 +107,9 @@ def main() -> int:
                      str(args.reranker_port), "--model", str(model_dir), "--device", "auto"],
                     runtime / "logs/reranker.log", os.environ.copy())
     _wait(reranker_url + "/health")
-    _run([sys.executable, str(runner), "--prepare"])
-    print("Runtime ready; run.py --limit10 for the portable ten-question report.")
+    _run([sys.executable, str(runner), "--prepare", "--ollama-url", ollama_url,
+          "--rerank-url", reranker_url + "/v1"])
+    print("Runtime ready; python run.py --limit 10 for the ten-question report.")
     return 0
 
 

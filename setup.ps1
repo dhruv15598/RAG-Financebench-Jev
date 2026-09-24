@@ -7,7 +7,8 @@ param(
     [string]$RerankerScript = '',
     [string]$ReportScript = '',
     [string]$Distro = 'Ubuntu',
-    [switch]$CheckOnly
+    [switch]$CheckOnly,
+    [switch]$Qwen38
 )
 
 $ErrorActionPreference = 'Stop'
@@ -80,6 +81,9 @@ Invoke-Wsl "if ! curl -fsS http://127.0.0.1:11435/api/tags >/dev/null; then nohu
 Wait-WslHttp 'http://127.0.0.1:11435/api/tags'
 Invoke-Wsl "OLLAMA_HOST=127.0.0.1:11435 ollama pull 'embeddinggemma:latest'"
 Invoke-Wsl "OLLAMA_HOST=127.0.0.1:11435 ollama pull 'qwen3.5:2b'"
+if ($Qwen38) {
+    Invoke-Wsl "'$venvWsl/bin/python' '$projectWsl/download_qwen38.py'"
+}
 
 $hf = ("'" + $venvWsl + "/bin/python' -c 'from huggingface_hub import snapshot_download; " +
     'snapshot_download(repo_id="Qwen/Qwen3-Reranker-0.6B", revision="e61197ed45024b0ed8a2d74b80b4d909f1255473", local_dir="' + $modelWsl + '")' + "'")
