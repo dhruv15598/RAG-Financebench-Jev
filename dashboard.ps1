@@ -12,11 +12,11 @@ $runtimeWsl = (& wsl.exe -d $Distro --exec wslpath -a -u (Resolve-Path -LiteralP
 if ($LASTEXITCODE -ne 0) { throw 'Cannot resolve runtime in WSL.' }
 $priorWslenv = $env:WSLENV
 try {
-    if ($env:AI_GATEWAY_API_KEY) {
-        $parts = @($env:WSLENV -split ':' | Where-Object { $_ })
-        if (-not ($parts -match '^AI_GATEWAY_API_KEY(?:/.*)?$')) { $parts += 'AI_GATEWAY_API_KEY' }
-        $env:WSLENV = $parts -join ':'
+    $parts = @($env:WSLENV -split ':' | Where-Object { $_ })
+    foreach ($name in @('AI_GATEWAY_API_KEY', 'DECISION_MODELS_CONFIG', 'QWEN_MIN_FREE_MIB', 'OLLAMA_URL')) {
+        if ([Environment]::GetEnvironmentVariable($name) -and -not ($parts -match "^${name}(?:/.*)?$")) { $parts += $name }
     }
+    $env:WSLENV = $parts -join ':'
     Write-Host "Open http://localhost:$Port once the server is ready. Ctrl+C stops it."
     & wsl.exe -d $Distro --cd $projectWsl --exec "$runtimeWsl/venv/bin/python" "$projectWsl/dashboard.py" --port $Port
 } finally { $env:WSLENV = $priorWslenv }

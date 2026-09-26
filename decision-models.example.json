@@ -1,0 +1,50 @@
+{
+  "models": [
+    {
+      "id": "decider-2b-coreai",
+      "command": [
+        "/usr/bin/env",
+        "DECIDER_MODEL=/absolute/path/to/.runtime/deciders/coreai2",
+        "DECIDER_INFER_ROOT=/absolute/path/to/.runtime/deciders/coreai-source",
+        "DECIDER_DEVICE=cuda",
+        "DECIDER_ALLOW_CUDA=1",
+        "DECIDER_HOST=127.0.0.1",
+        "DECIDER_PORT=8011",
+        "DECIDER_MODEL_ALIAS=decider-2b-coreai",
+        "/absolute/path/to/coreai-venv/bin/python",
+        "/absolute/path/to/repository/local_deciders/decider_server.py"
+      ],
+      "port": 8011,
+      "model": "decider-2b-coreai",
+      "endpoint": "/v1/systemone",
+      "ready_endpoint": "/v1/models",
+      "min_free_mib": 8000,
+      "startup_timeout": 300,
+      "enabled": false,
+      "device": "cuda"
+    },
+    {
+      "id": "decider-4b-v2-q4",
+      "command": [
+        "/absolute/path/to/q4-venv/bin/python",
+        "/absolute/path/to/repository/local_deciders/q4_server.py",
+        "--model",
+        "/absolute/path/to/.runtime/deciders/decider4-q4/decider-4b.v2-Q4_K_M.gguf",
+        "--native-source",
+        "/absolute/path/to/.runtime/deciders/decider4-source",
+        "--port",
+        "8012",
+        "--ctx",
+        "32768",
+        "--gpu-layers",
+        "-1"
+      ],
+      "port": 8012,
+      "model": "decider-4b-v2-q4",
+      "device": "cuda",
+      "min_free_mib": 6000,
+      "startup_timeout": 300,
+      "enabled": false
+    }
+  ]
+}

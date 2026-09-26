@@ -141,13 +141,21 @@ Initial setup already prepares the index. `-Prepare` prepares or resumes a compa
 
 ## Live dashboard
 
-After setup, run `.\dashboard.ps1` on Windows, or `python dashboard.py` in the configured Linux environment. Open http://localhost:7860. Enter your Vercel key at the hidden terminal prompt, or supply `AI_GATEWAY_API_KEY` in the server environment. The key stays on the server. Ollama must be running on port 11435; Linux users can override this with `OLLAMA_URL`. `dashboard.ps1` accepts `-Distro`, `-RuntimeDir` and `-Port`.
+After setup, run `.\dashboard.ps1` on Windows or `python dashboard.py` in Linux/WSL, then open http://localhost:7860. Ollama must be running on port 11435 (`OLLAMA_URL` can override it). Choose a saved question, an installed Qwen answer model and a checker: **Jev**, **Decider 2B CoreAI** or **Decider 4B v2 Q4**. Jev requires `AI_GATEWAY_API_KEY` in the server environment; the local checkers do not.
 
-A timeout can occur after the gateway has processed a request. Retrying it may therefore incur a second charge; the dashboard retries at most once per check.
+Each run uses saved retrieval expanded to complete source pages, checks the evidence, streams a fresh Qwen answer and checks that answer. The benchmark reference is displayed but never sent to the models. The dashboard runs one demonstration at a time and does not save answer runs. Every run requests a fresh answer; fixed evidence and temperature 0 commonly produce the same text. Ollama may reuse a prompt prefix to reduce processing time, which does not replay a cached answer.
 
-Choose one of the ten saved FinanceBench cases and an installed Qwen model. The dashboard reuses the experiment's selected source pages, expanded to include their complete indexed text and makes **new** Jev evidence checks, streams a **new** Qwen answer, then asks Jev to check that answer. It does not repeat retrieval or indexing and does not require the reranker or a prepared index once its Python dependencies and answer model are available. Both models receive the same expanded page text. Historical reports retain their original chunks and verdicts. The benchmark reference is shown below the model responses for the selected question, even if a live call fails. It is never sent to either model.
+Generation uses an 8,192-token context and a 384-token output limit. Incomplete answers are not sent for checking. Checker initialization and evaluation timings are shown separately. Scores are model judgments rather than calibrated correctness probabilities. Jev retries transient failures once per check; retries can incur another charge. Safe failure details are saved in `outputs/dashboard-errors.jsonl` without credentials or upstream response bodies. Stop with Ctrl+C.
 
-Generation uses an 8,192-token context, temperature 0 and up to 384 output tokens. Incomplete generations are not sent for approval. Timings include model loading and network overhead. Jev scores are model judgments, not calibrated accuracy estimates. The dashboard is local-only, runs one demonstration at a time, and does not save new runs. A successful run makes two Jev requests. A temporary network failure or HTTP 408/429/5xx can trigger one visible retry per check, which can add requests and latency. Authentication and response-validation failures are not retried. Safe failure details are saved locally in `outputs/dashboard-errors.jsonl`; no keys or upstream response bodies are recorded. Stop with Ctrl+C.
+### Connect local checkers
+
+Follow `local_deciders/README.md` to download the pinned CoreAI 2B or Q4 checkpoint and prepare its separate Linux/WSL environment. Copy `decision-models.example.json` to a private file outside this repository, replace its absolute path placeholders and enable the desired entries. Set `DECISION_MODELS_CONFIG` to that file's absolute Linux path before launching the dashboard. The examples invoke the repository adapters directly; CoreAI uses environment arguments, while Q4 requires both its GGUF file and pinned native source directory. No checkpoints are downloaded by the dashboard.
+
+The active IDs are `jev`, `decider-2b-coreai` and `decider-4b-v2-q4`. Old configuration entries for Kev 0.8B, Kev 4B and BF16 Decider 4B are ignored with a migration warning; remove those entries. Other unknown IDs are rejected. Historical trial reports may still mention retired models.
+
+Local phases release models from the connected Ollama instance, load the evidence checker, stop it, generate with Qwen, unload Qwen and reload the answer checker. Cleanup stops owned checker processes and releases connected Ollama models. Occupied checker ports are refused, and unrelated GPU applications are never terminated. Avoid sharing the connected Ollama instance with another active generation job. Run the dashboard inside Linux/WSL and use direct commands rather than detached launchers for process-group cleanup.
+
+GPU preflight defaults are 8,000 MiB free for CoreAI, 6,000 MiB for Q4 and 6,000 MiB for Qwen (`QWEN_MIN_FREE_MIB`). These are guards, not fit guarantees. The `device` field controls the checker's GPU guard only: CPU execution must also be requested in its actual launch command (`DECIDER_DEVICE=cpu` for CoreAI or `--gpu-layers 0` for Q4). See `HARDWARE.md` for RAM, context and GPU limits. Without NVIDIA telemetry, free memory cannot be verified.
 
 ## Files and credit
 
@@ -160,7 +168,7 @@ Generation uses an 8,192-token context, temperature 0 and up to 384 output token
 | `reranker.py` | Local endpoint for the Qwen reranker |
 | `render.py` / `Demo.ipynb` | Report and editable notebook |
 | `data/` | Source manifest and saved research results |
-| `dashboard.py` / `dashboard.html` | Live model streaming and Jev checks in a local browser |
+| `dashboard.py` / `dashboard.html` | Live Qwen streaming and selected decision checks in a local browser |
 
 Docket is installed from a pinned upstream commit. Its embeddings, keyword search and hybrid retrieval are not new methods introduced here. The local reranker adapter and experiment/reporting code connect those components for this experiment. FinanceBench reference answers are evaluation-only and are never sent to Qwen or Jev. Dataset use is subject to its noncommercial license; see `DATA_LICENSE.md`.
 
